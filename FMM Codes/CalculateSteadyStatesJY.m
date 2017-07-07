@@ -23,7 +23,7 @@ function states = CalculateSteadyStatesJY(parameters,FK506)
     x           = parameters(15);%RCAN1 switch hill coefficient
     betaNF        = parameters(16);%NFAT activation enhancement by F
     betaRF         = parameters(17);%RCAN1-p production enhancement by F
-    betaRK         = parameters(18);%RCAN1-p production enhancement by F
+    betaRK         = parameters(18);%RCAN1-p production enhancement by FK506
     Nc         = parameters(19);%Threshold activated NFAT causes inflammation
  
     if FK506 == 0
