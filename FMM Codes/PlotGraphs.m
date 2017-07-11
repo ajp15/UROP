@@ -20,19 +20,19 @@ function PlotGraphs(ModelData,Switch_state,~,parameters,constants,timeWindow,set
     % plot fungal growth data
     figure();
     %semilogy(ModelData(:,1),ModelData(:,3), 'c',ModelData(:,1),ModelData(:,4), 'r',ModelData(:,1),ModelData(:,5), 'k',ModelData(:,1),ModelData(:,6), 'm',ModelData(:,1),ModelData(:,2),'b','MarkerSize', constants.ms,'LineWidth',constants.lw/2)
-    semilogy(ModelData(:,1),ModelData(:,3), 'c',ModelData(:,1),ModelData(:,4), 'r',ModelData(:,1),ModelData(:,5), 'k','MarkerSize', constants.ms,'LineWidth',3);hold on,
+    semilogy(ModelData(:,1),ModelData(:,3), 'k',ModelData(:,1),ModelData(:,4), 'r',ModelData(:,1),ModelData(:,5), 'g','MarkerSize', constants.ms,'LineWidth',5);hold on,
     semilogy(ModelData(:,1),ModelData(:,6), 'm',ModelData(:,1),ModelData(:,2),'b','MarkerSize', constants.ms,'LineWidth',5);
   
     hold on
     %NFs ss
     plot(timeWindow,[parameters(19),parameters(19)], '--k', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
-    plot(timeWindow,[states.switchOff(2),states.switchOff(2)], '--c', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
-    plot(timeWindow,[states.switchOn(2),states.switchOn(2)], '--c', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
+    plot(timeWindow,[states.switchOff(2),states.switchOff(2)], ':k', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
+    plot(timeWindow,[states.switchOn(2),states.switchOn(2)], ':k', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
     
     %RCan1 ss
-    plot(timeWindow,[parameters(14),parameters(14)], '--k', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
-    plot(timeWindow,[states.switchOff(3),states.switchOff(3)], '--r', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
-    plot(timeWindow,[states.switchOn(3),states.switchOn(3)], '--r', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
+    plot(timeWindow,[parameters(14),parameters(14)], '--r', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
+    plot(timeWindow,[states.switchOff(3),states.switchOff(3)], ':r', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
+    plot(timeWindow,[states.switchOn(3),states.switchOn(3)], ':r', 'MarkerSize', constants.ms,'LineWidth',constants.lw/3)
 
     if plotSwitch==1
         plot(ModelData(:,1),Switch_state(1,:),'y','MarkerSize', constants.ms,'LineWidth',constants.lw/4)
@@ -45,6 +45,6 @@ function PlotGraphs(ModelData,Switch_state,~,parameters,constants,timeWindow,set
     xlabel('Time[h]', 'FontSize', constants.fs);
     ylabel('variables','FontSize', constants.fs);
     axis([timeStart timeEnd 1e-5 2e4]) %max(ModelData(:,6))
-
+    legend ('N*','R','Rp','T','F','Nc','N-initial','N-final','Rc','R-initial','R-final') %---------------------------------------
+    title('changing Nc');
 end
-
