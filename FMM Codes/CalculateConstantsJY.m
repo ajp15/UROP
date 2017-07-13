@@ -20,7 +20,7 @@ constants.ms=15;%marker size
  
 %fungal growth data 
 constants.data.Fgrowth.t = [0,1.5,3,4.5];
-fungusLevel = [5e6, 2.18e6, 1.36e6, 4.52e5; 5e6, 2.97e6, 1.83e6, 5.17e5];
+fungusLevel = [5, 2.18, 1.36, .452; 5, 2.97, 1.83, .517];
 constants.data.Fgrowth.F_MOI3_withM = mean(fungusLevel);
 
 %TNFalpha data
