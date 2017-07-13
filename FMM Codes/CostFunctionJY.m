@@ -38,6 +38,7 @@ function cost = CostFunctionJY(model,parameters,constants,plotData)
             i=i+1;
         end
     end
+
     %to calculate initial condition
     parameters = parametersInput;
     a_temp = (parameters(4)*parameters(7)*parameters(5))/(parameters(2)*parameters(6));
@@ -51,6 +52,9 @@ function cost = CostFunctionJY(model,parameters,constants,plotData)
     ICs = [3e5,NFs0,RCAN10,0,0,0];
     initial_Switch_Cdt=GetSwitchState(parameters,0);   
     [modelData_F,~] = RecursiveHybrid_EventLocationMethod_Fungusv5([0,6],IC_FungalData,initial_Switch_Cdt,parameters);
+    %-------------------edit: normalising modelData_F-------------------
+    modelData_F(:,2) = modelData_F(:,2)./1e6;
+    %-------------------end of edited section------------------------
     [modelData_NFs,~] = RecursiveHybrid_EventLocationMethod_Fungusv5([0,6],IC_NFsData,initial_Switch_Cdt,parameters);
 
     %for TNFalpha & RCAN1
@@ -76,7 +80,7 @@ function cost = CostFunctionJY(model,parameters,constants,plotData)
  
     if(plotData==1)%we want to plat the fits
         figure();
-        plot(modelData_F(:,1),modelData_F(:,2), 'b', times, data, 'bo','MarkerSize', constants.ms,'LineWidth',constants.lw)
+        plot(modelData_F(:,1),modelData_F(:,2), 'b', times, data, 'bo','MarkerSize', constants.ms,'LineWidth',constants.lw) 
         xlabel('Time[h]', 'FontSize', constants.fs);
         ylabel('F MOI','FontSize', constants.fs);
         title('Fungal Growth data','FontSize', constants.fs)
