@@ -17,9 +17,14 @@ function cost = CostFunctionJY(model,parameters,constants,plotData)
     %function that calculates the cost given the model value and the
     %experimental value at each time point
     function cost = CalculateCostJY(constants,times,modelValue,experimentalValue)
+        if experimentalValue==0
+            dataError=1;
+        else
         dataError       = experimentalValue*0.1;% 10% marigin of error
+        end
         least           = (modelValue - experimentalValue)./dataError;
         cost            = least.*least/length(times); %make sure that more data points do not bias results
+       
     end
  
     %function that matches the model results to the experimental results 
@@ -33,8 +38,9 @@ function cost = CostFunctionJY(model,parameters,constants,plotData)
  
             modelValue     = modelData(timeIndex,indexToMatch);%2nd index is F level
             experimentalValue    = data(i);
+       
             cost = cost + CalculateCostJY(constants,times,modelValue,experimentalValue);
- 
+            
             i=i+1;
         end
     end
@@ -53,13 +59,15 @@ function cost = CostFunctionJY(model,parameters,constants,plotData)
     initial_Switch_Cdt=GetSwitchState(parameters,0);   
     [modelData_F,~] = RecursiveHybrid_EventLocationMethod_Fungusv5([0,6],IC_FungalData,initial_Switch_Cdt,parameters);
     %-------------------edit: normalising modelData_F-------------------
-    modelData_F(:,2) = modelData_F(:,2)./1e6;
+    %modelData_F(:,2) = modelData_F(:,2)./1e6;
+       
     %-------------------end of edited section------------------------
     [modelData_NFs,~] = RecursiveHybrid_EventLocationMethod_Fungusv5([0,6],IC_NFsData,initial_Switch_Cdt,parameters);
-
+        
     %for TNFalpha & RCAN1
     [modelData_general,~] = RecursiveHybrid_EventLocationMethod_Fungusv5([0,6],ICs,initial_Switch_Cdt,parameters);
-
+        
+       
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%% Many different fits corresponding to different sets of experimental data %%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,7 +85,7 @@ function cost = CostFunctionJY(model,parameters,constants,plotData)
     
     %Fit to fungal growth data
     cost = AddDataToCost(cost,times,data,modelData_F,2);
- 
+    
     if(plotData==1)%we want to plat the fits
         figure();
         plot(modelData_F(:,1),modelData_F(:,2), 'b', times, data, 'bo','MarkerSize', constants.ms,'LineWidth',constants.lw) 
@@ -186,3 +194,4 @@ function cost = CostFunctionJY(model,parameters,constants,plotData)
     
  
 end
+
