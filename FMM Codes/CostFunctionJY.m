@@ -18,7 +18,7 @@ function cost = CostFunctionJY(model,parameters,constants,plotData)
     %experimental value at each time point
     function cost = CalculateCostJY(constants,times,modelValue,experimentalValue)
         if experimentalValue==0
-            dataError=1;
+            dataError=0;
         else
         dataError       = experimentalValue*0.1;% 10% marigin of error
         end
