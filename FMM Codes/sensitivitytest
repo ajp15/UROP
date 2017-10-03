@@ -1,0 +1,134 @@
+%After running thru cluster, use the minParameters obtained to produce
+%graphs here
+%Make sure to change constants.numRanParameters to 1
+function PlotGraphsAsh()
+
+clear; close all;
+
+
+
+%     *a           = parameters(1);%fungal growth rate      KEPT CONSTANT 0.2349-0.3375h^-1
+%     kN         = parameters(2);%NFAT activation rate
+%     *yNK         = parameters(3);%FK506 inhibition rate (of NFAT activation)KEPT CONSTANT
+%     *deltaN      = parameters(4);%NFAT deactivation rate dependent on parameter(2)
+%     kRN          = parameters(5);%RCAN1 production rate
+%     *deltaR      = parameters(6);%RCAN1 degredation rate       KEPT CONSTANT 0.077-0.0924h^-1
+%     yNR         = parameters(7);%RCAN1 inhibition rate (of NFAT activation)
+%     kR         = parameters(8);%RCAN1 production rate
+%     betaNR         = parameters(9);%Enhanced NFAT activation rate (by RCAN1-p)
+%     *deltaRP     = parameters(10);%RCAN1-p degredation rate    KEPT CONSTANT 0.231-0.693h^-1
+%     kT          = parameters(11);%TNFalpha production
+%     deltaTF          = parameters(12);%Fungal killing rate
+%     *deltaT      = parameters(13);%TNFalpha degredation rate   KEPT CONSTANT 0.05 according to JY report. 2.2851 according to Amy's supplementary report
+%     Rc           = parameters(14);%RCAN1 switch threshold
+%     *x           = parameters(15);%RCAN1 switch hill coefficient KEPT CONSTANT
+%     betaNF         = parameters(16);%NFAT activation enhancement by F
+%     betaRF         = parameters(17);%RCAN1-p production enhancement by F
+%     *betaRK         = parameters(18);%RCAN1-p production enhancement by FK506 KEPT CONSTANT
+%     Nc         = parameters(19);%Threshold activated NFAT causes inflammation
+
+
+
+%start
+%input parameters to be tested
+
+startparameters = [
+  0.256	1.71	0	19.2	1.33	0.0792	131	0.127	49.7	0.232	0.0230	126	0.05	0.173	0.008	6.69	0.629	0	0.00837  
+];
+
+% variables that counts the number of healthy phenotypes
+No_ofHealthy=0;
+
+for repeats=1:10000   %number of simulations tested
+repeats    % can be commented out as slows code but allows you to have an idea where you are
+
+x=(rand(1,19)-0.5)/5;   % makes an array of random numbers between -0.1 and 0.1
+multiple=1+x;           %add 1 to so the number is between 0.9-1.1 therefore between 90% and 110%
+
+parameters=startparameters.*(multiple);
+
+for n=[3,13,14,15,18,19]
+parameters(n)=startparameters(n);       % keep certain parameters constant
+end
+
+
+while parameters(1)<0.2349  ||  parameters(1)>0.3375      % keep parameters in a range
+    
+    z=(rand-0.5)/5;
+    parameters(1)= startparameters(1)*(1+z);
+    x(1,1)=z;  
+
+end
+
+while parameters(6)<0.077  || parameters(6)>0.0924      % keep parameters in a range
+    
+    v=(rand-0.5)/5;
+    parameters(6)= startparameters(6)*(1+v);
+    x(1,6)=v;
+    
+end
+
+while parameters(10)<0.231 || parameters(10)>0.693      % keep parameters in a range
+    
+    j=(rand-0.5)/5;
+    parameters(10)= startparameters(10)*(1+j);
+    x(1,6)=j;
+    
+end
+
+parameters(4) = parameters(2)/0.0894;     % parameters 4 is dependant on 2
+
+
+       
+model = 'FungalMacrophageModel';
+
+constants = CalculateConstantsJY();
+
+%cost = CostFunctionJY(model, parameters,constants,1);      %can output cost but will slow code
+
+%disp(cost)                                                 
+
+timespan = [0,1000];
+states = CalculateSteadyStatesJY(parameters,0); 
+
+% [F, NFAT, R, Rp, T, FK506]
+num_M = 5e6/3;
+initialCdt = [1e6/num_M, states.switchOff(2), states.switchOff(3), 0, 0, 0];
+initial_Switch_Cdt = GetSwitchState(parameters,0);
+
+[modelData,Switch_state] = RecursiveHybrid_EventLocationMethod_Fungusv5(timespan,initialCdt,initial_Switch_Cdt,parameters);
+l=0;
+    
+%PlotGraphs(modelData,Switch_state,states,parameters,constants,timespan,0,0)  % can plot graphs but  slows code
+
+for i= 500:1000             % tests to see if it falls to steady state and below switches
+        
+     a=abs(modelData(:,1)-i);
+            n = find(a==min(a));
+            
+     if modelData(n,6) < 10e-5 & modelData(n,2) < 10e-5  &  modelData(n,4) < 0.173  & modelData(n,3) < 0.00837 
+  
+         
+         l=1+l;
+      
+     else l=0;
+    
+     end
+end
+ 
+ if l==501        %if every point tested is where it should be it is healthy
+             No_ofHealthy = No_ofHealthy+ 1;
+             
+ end 
+
+
+
+
+% S = 'press for next graph';
+% display(S)
+
+end
+    
+No_ofHealthy
+% k = waitforbuttonpress;
+end
